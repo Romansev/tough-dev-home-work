@@ -1,2 +1,0 @@
-1. Бизнес цепочки: https://miro.com/app/board/uXjVMxV5wTc=/?share_link_id=128918081724
-2. Модель данных + взаимодействие сервисов: https://lucid.app/lucidchart/42a276e7-348a-4c8d-ad14-a12325d49f5a/edit?invitationId=inv_e7b19290-996f-43f6-b139-a55f22bc15b1&page=0_0#
