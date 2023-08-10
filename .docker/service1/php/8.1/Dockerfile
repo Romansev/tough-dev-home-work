@@ -3,7 +3,7 @@ FROM php:8.1-fpm
 # System dependencies
 RUN apt-get update
 RUN apt-get install -y git zlib1g-dev wget libcurl4-openssl-dev librdkafka-dev libxml2-dev
-#RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 #RUN apt-get install librdkafka-dev
 RUN pecl install rdkafka
 
