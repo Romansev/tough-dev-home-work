@@ -1,0 +1,100 @@
+version: '3.8'
+
+x-service1-volume:
+  &service1-volume
+  type: bind
+  source: ./service1
+  target: /var/www/service1
+
+x-service2-volume:
+  &service2-volume
+  type: bind
+  source: ./service2
+  target: /var/www/service2
+
+services:
+  php:
+    build: .docker/service1/php/8.1
+    volumes:
+      - <<: *service1-volume
+      - .docker/php/8.1/php.ini:/usr/local/etc/php/php.ini
+    links:
+      - mysql
+    environment:
+      PHP_IDE_CONFIG: "serverName=service1"
+    networks:
+      localnetwork:
+        aliases:
+          - php
+  php2:
+    build: .docker/service2/php2/8.1
+    volumes:
+      - <<: *service2-volume
+      - .docker/php2/8.1/php.ini:/usr/local/etc/php/php.ini
+    links:
+      - mysql2
+    environment:
+      PHP_IDE_CONFIG: "serverName=service2"
+    networks:
+      localnetwork:
+        aliases:
+          - php2
+  nginx:
+    build: .docker/service1/nginx/
+    ports:
+      - "81:81"
+    links:
+      - php
+    volumes:
+      - <<: *service1-volume
+    networks:
+      localnetwork:
+        aliases:
+          - nginx
+          - service1
+  nginx2:
+    build: .docker/service2/nginx2/
+    ports:
+      - "82:82"
+    links:
+      - php2
+    volumes:
+      - <<: *service2-volume
+    networks:
+      localnetwork:
+        aliases:
+          - nginx2
+          - service2
+  mysql:
+    image: mariadb:10.2.22
+    volumes:
+      - .docker/service1/mysql/storage:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_USER=user"
+      - "MYSQL_PASSWORD=root"
+      - "MYSQL_DATABASE=app"
+    ports:
+      - "3306:3306"
+    networks:
+      localnetwork:
+        aliases:
+          - mysql
+  mysql2:
+    image: mariadb:10.2.22
+    volumes:
+      - .docker/service2/mysql2/storage:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_USER=user2"
+      - "MYSQL_PASSWORD=root"
+      - "MYSQL_DATABASE=app"
+    ports:
+      - "3307:3306"
+    networks:
+      localnetwork:
+        aliases:
+          - mysql2
+networks:
+  localnetwork:
+    name: worknetwork
