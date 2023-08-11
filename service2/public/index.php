@@ -1,12 +1,5 @@
 <?php
 
-
-/*var_dump('222222222222');
-$homepage = file_get_contents('http://nginx:81');
-var_dump($homepage);*/
-phpinfo();
-die;
-
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 

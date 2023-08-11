@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Ramsey\Uuid\Uuid;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    private const DEFAULT_ROLE = 'employee';
 
     /**
      * The attributes that are mass assignable.
@@ -59,6 +62,16 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims(): array
     {
-        return [];
+        return [
+            'uuid' => $this->uuid,
+            'role' => self::DEFAULT_ROLE,
+        ];
+    }
+
+    public function save(array $options = [])
+    {
+        $this->uuid = Uuid::uuid4();
+
+        return parent::save($options);
     }
 }
