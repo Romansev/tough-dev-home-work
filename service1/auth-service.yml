@@ -1,0 +1,50 @@
+version: '3.8'
+
+x-service1-volume:
+  &service1-volume
+  type: bind
+  source: .
+  target: /var/www/service1
+
+services:
+  php:
+    build: ../.docker/service1/php/8.1
+    volumes:
+      - <<: *service1-volume
+      - ../.docker/php/8.1/php.ini:/usr/local/etc/php/php.ini
+    links:
+      - mysql
+    environment:
+      PHP_IDE_CONFIG: "serverName=service1"
+    networks:
+      localnetwork:
+        aliases:
+          - php
+  nginx:
+    build: ../.docker/service1/nginx/
+    ports:
+      - "81:81"
+    links:
+      - php
+    volumes:
+      - <<: *service1-volume
+    networks:
+      localnetwork:
+        aliases:
+          - nginx
+          - service1
+  mysql:
+    image: mariadb:10.2.22
+    volumes:
+      - ../.docker/service1/mysql/storage:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_USER=user"
+      - "MYSQL_PASSWORD=root"
+      - "MYSQL_DATABASE=app"
+    ports:
+      - "3306:3306"
+    networks:
+      localnetwork:
+        aliases:
+          - mysql

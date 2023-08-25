@@ -1,0 +1,50 @@
+version: '3.8'
+
+x-service2-volume:
+  &service2-volume
+  type: bind
+  source: .
+  target: /var/www/service2
+
+services:
+  php2:
+    build: ../.docker/service2/php2/8.1
+    volumes:
+      - <<: *service2-volume
+      - ../.docker/php2/8.1/php.ini:/usr/local/etc/php/php.ini
+    links:
+      - mysql2
+    environment:
+      PHP_IDE_CONFIG: "serverName=service2"
+    networks:
+      localnetwork:
+        aliases:
+          - php2
+  nginx2:
+    build: ../.docker/service2/nginx2/
+    ports:
+      - "82:82"
+    links:
+      - php2
+    volumes:
+      - <<: *service2-volume
+    networks:
+      localnetwork:
+        aliases:
+          - nginx2
+          - service2
+  mysql2:
+    image: mariadb:10.2.22
+    volumes:
+      - ../.docker/service2/mysql2/storage:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_USER=user"
+      - "MYSQL_PASSWORD=root"
+      - "MYSQL_DATABASE=app"
+    ports:
+      - "3307:3306"
+    networks:
+      localnetwork:
+        aliases:
+          - mysql2
