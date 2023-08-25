@@ -11,7 +11,7 @@ services:
     build: ../.docker/service2/php2/8.1
     volumes:
       - <<: *service2-volume
-      - ../.docker/php2/8.1/php.ini:/usr/local/etc/php/php.ini
+      - ../.docker/service2/php2/8.1/php.ini:/usr/local/etc/php/php.ini
     links:
       - mysql2
     environment:
